@@ -3,8 +3,7 @@
 """ A script to attempt prediction of the income bracket for the records in the 'adult.data' data set. """
 
 __author__ = "Andrew Scurfield"
-__email__ = "d16124515@mydit.ie"
-
+__email__ = "D16124515@mydit.ie"
 
 import sys
 
@@ -25,6 +24,7 @@ LOCAL_FILE_LOCATION_STR = 'adult.data'
 
 
 def create_data_sets(file_location, percentage_int=75):
+
     """ Splits 'adult.data' into training and testing sets.
 
     Opens a local CSV file and splits record lines into a list.  Splits each record
@@ -36,6 +36,7 @@ def create_data_sets(file_location, percentage_int=75):
     :param percentage_int: the percentage of records required for training. Default value 75.
     :return: three lists of records as tuples.
     """
+
     # Original source of 'adult.data' no longer available. Changed from using httplib2 to opening a local file.
     try:
         local_file = open(file_location, 'r')
@@ -80,6 +81,7 @@ def create_data_sets(file_location, percentage_int=75):
 
 
 def count_values(data_set_list):
+
     """ Counts attribute values in a training data set and returns a dictionary of counts and totals.
 
     For an attribute with an integer value, add to sum of all values for this attribute
@@ -89,6 +91,7 @@ def count_values(data_set_list):
     :param data_set_list: a list of adult data set records as tuples.
     :return: dictionary of counts.
     """
+
     value_counts_dict = {KEYS_TUPLE[0]: 0,
                          KEYS_TUPLE[1]: {},
                          KEYS_TUPLE[2]: 0,
@@ -121,6 +124,7 @@ def count_values(data_set_list):
 
 
 def compare_values(over50_attribute_dict, under50_attribute_dict):
+
     """ Compares two dictionaries of string value counts for a single attribute.
 
     Checks if the attribute values are in both input dictionaries.  Adds string value if not
@@ -132,11 +136,12 @@ def compare_values(over50_attribute_dict, under50_attribute_dict):
     :param under50_attribute_dict: attribute value counts for <=50k income bracket.
     :return: tuple of attribute string values indicating higher income bracket.
     """
+
     expanded_over50_dict = {}
     expanded_under50_dict = {}
 
-    # TODO: Why is 'key' greyed out?
-    test_set = {key for key in over50_attribute_dict.keys() for key in under50_attribute_dict.keys()}
+    test_set = {key for key in over50_attribute_dict.keys()}
+    test_set.update(key for key in under50_attribute_dict.keys())
 
     for key in test_set:
         
@@ -156,6 +161,7 @@ def compare_values(over50_attribute_dict, under50_attribute_dict):
 
 
 def create_test_values(over50_values_dict, under50_values_dict, total_over50_records_int, total_under50_records_int):
+
     """ Creates a dictionary of testing values for an income prediction test.
 
     For each tested attribute with an integer value, the over and under 50k values are averaged
@@ -171,8 +177,7 @@ def create_test_values(over50_values_dict, under50_values_dict, total_over50_rec
     :return: dictionary of values for testing against with income prediction.
     """
 
-    # TODO: Change name to testing values?
-    test_values_dict = {}
+    testing_values_dict = {}
 
     for attribute_key in KEYS_TUPLE:
         
@@ -180,7 +185,9 @@ def create_test_values(over50_values_dict, under50_values_dict, total_over50_rec
             
             over50_float = over50_values_dict[attribute_key] // total_over50_records_int
             under50_float = under50_values_dict[attribute_key] // total_under50_records_int
-            # TODO: Explain this bool.
+
+            # The following boolean value accounts for some int values being higher for <=50k records.
+            # Comparison will be made based on >50k being more than the average value unless the boolean value is true.
             under_bool = False
             
             if over50_float >= under50_float:
@@ -188,10 +195,8 @@ def create_test_values(over50_values_dict, under50_values_dict, total_over50_rec
             else:
                 average_float = (over50_float + under50_float) / 2
                 under_bool = True
-            test_values_dict[attribute_key] = (average_float, under_bool)
-            
+            testing_values_dict[attribute_key] = (average_float, under_bool)
         else:
-            
             weighted_attr_one_dict = {}
             weighted_attr_two_dict = {}
             
@@ -201,12 +206,13 @@ def create_test_values(over50_values_dict, under50_values_dict, total_over50_rec
             for key in under50_values_dict[attribute_key].keys():
                 weighted_attr_two_dict[key] = under50_values_dict[attribute_key][key] / total_under50_records_int
                 
-            test_values_dict[attribute_key] = compare_values(weighted_attr_one_dict, weighted_attr_two_dict)
+            testing_values_dict[attribute_key] = compare_values(weighted_attr_one_dict, weighted_attr_two_dict)
 
-    return test_values_dict
+    return testing_values_dict
 
 
 def income_predictor(test_data_list, test_values_dict):
+
     """ Compares each record in test data set against testing values to attempt income bracket prediction.
 
     Integer attribute values are checked to see if they are over the test threshold in the
