@@ -42,6 +42,10 @@ def count_discrete_values(data_set_list):
             else:
                 attr_value_count_dict[key][record[key]] = 1
 
+    for key in attr_value_count_dict.keys():
+        for value in attr_value_count_dict[key]:
+            attr_value_count_dict[key][value] /= record_total_int
+
     return attr_value_count_dict
 
 
