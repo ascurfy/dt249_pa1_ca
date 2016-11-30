@@ -46,14 +46,19 @@ def count_discrete_values(data_set_list):
         for value in attr_value_count_dict[key]:
             attr_value_count_dict[key][value] /= record_total_int
 
-    return attr_value_count_dict
+    for record in data_set_list:
+        for key in attr_value_count_dict.keys():
+            record[key] = attr_value_count_dict[key][record[key]]
+
+    return data_set_list
 
 
 def main():
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
+    substitute_data_set_list = count_discrete_values(data_set_source_list)
 
-    print(count_discrete_values(data_set_source_list))
-
+    for record in substitute_data_set_list:
+        print(record)
 
 if __name__ == "__main__":
     main()
