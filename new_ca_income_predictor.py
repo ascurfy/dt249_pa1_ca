@@ -1,6 +1,19 @@
 import httplib2
 
 ADULT_DATA_SET_URL = "http://mf2.dit.ie/machine-learning-income.data"
+KEYS_TUPLE = ('age',
+              'work_class',
+              'edu_number',
+              'marital_status',
+              'occupation',
+              'relationship',
+              'race',
+              'sex',
+              'capital_gain',
+              'capital_loss',
+              'hours_per_week')
+
+MEASURED_INDEXES = (0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12)
 
 
 def obtain_data_set(data_set_url):
@@ -56,12 +69,37 @@ def count_discrete_values(data_set_list):
     return data_set_list
 
 
+def calculate_average(data_set_list):
+
+    record_total_int = len(data_set_list)
+    attribute_sum_dict = {KEYS_TUPLE[0]: 0.0,
+                         KEYS_TUPLE[1]: 0.0,
+                         KEYS_TUPLE[2]: 0.0,
+                         KEYS_TUPLE[3]: 0.0,
+                         KEYS_TUPLE[4]: 0.0,
+                         KEYS_TUPLE[5]: 0.0,
+                         KEYS_TUPLE[6]: 0.0,
+                         KEYS_TUPLE[7]: 0.0,
+                         KEYS_TUPLE[8]: 0.0,
+                         KEYS_TUPLE[9]: 0.0,
+                         KEYS_TUPLE[10]: 0.0}
+
+    for record in data_set_list:
+        index_count = 0
+        for index in MEASURED_INDEXES:
+            attribute_sum_dict[KEYS_TUPLE[index_count]] += record[index]
+            index_count += 1
+
+    for key in attribute_sum_dict.keys():
+        attribute_sum_dict[key] /= record_total_int
+
+    return attribute_sum_dict
+
+
 def main():
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
     substitute_data_set_list = count_discrete_values(data_set_source_list)
-
-    for record in substitute_data_set_list:
-        print(record)
+    print(calculate_average(substitute_data_set_list))
 
 if __name__ == "__main__":
     main()
