@@ -43,8 +43,18 @@ def obtain_data_set(data_set_url):
     return data_set_list
 
 
-def create_training_sets():
-    pass
+def create_training_sets(data_set_list):
+
+    over_50_list = []
+    under_50_list = []
+
+    for record in data_set_list:
+        if record[-1] == '>50k':
+            over_50_list.append(record)
+        else:
+            under_50_list.append(record)
+
+    return over_50_list, under_50_list
 
 
 def count_discrete_values(data_set_list):
@@ -73,16 +83,16 @@ def calculate_average(data_set_list):
 
     record_total_int = len(data_set_list)
     attribute_sum_dict = {KEYS_TUPLE[0]: 0.0,
-                         KEYS_TUPLE[1]: 0.0,
-                         KEYS_TUPLE[2]: 0.0,
-                         KEYS_TUPLE[3]: 0.0,
-                         KEYS_TUPLE[4]: 0.0,
-                         KEYS_TUPLE[5]: 0.0,
-                         KEYS_TUPLE[6]: 0.0,
-                         KEYS_TUPLE[7]: 0.0,
-                         KEYS_TUPLE[8]: 0.0,
-                         KEYS_TUPLE[9]: 0.0,
-                         KEYS_TUPLE[10]: 0.0}
+                          KEYS_TUPLE[1]: 0.0,
+                          KEYS_TUPLE[2]: 0.0,
+                          KEYS_TUPLE[3]: 0.0,
+                          KEYS_TUPLE[4]: 0.0,
+                          KEYS_TUPLE[5]: 0.0,
+                          KEYS_TUPLE[6]: 0.0,
+                          KEYS_TUPLE[7]: 0.0,
+                          KEYS_TUPLE[8]: 0.0,
+                          KEYS_TUPLE[9]: 0.0,
+                          KEYS_TUPLE[10]: 0.0}
 
     for record in data_set_list:
         index_count = 0
@@ -98,8 +108,13 @@ def calculate_average(data_set_list):
 
 def main():
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
-    substitute_data_set_list = count_discrete_values(data_set_source_list)
-    print(calculate_average(substitute_data_set_list))
+
+    over50_list, under50_list = create_training_sets(data_set_source_list)
+    over50_sub_list = count_discrete_values(over50_list)
+    under50_sub_list = count_discrete_values(under50_list)
+
+    print(calculate_average(over50_sub_list))
+    print(calculate_average(under50_sub_list))
 
 if __name__ == "__main__":
     main()
