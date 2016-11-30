@@ -22,6 +22,9 @@ def obtain_data_set(data_set_url):
 
         temp_value_list = record.split(',')
         record_value_list = [value.strip().lower() for value in temp_value_list]
+        for index, value in enumerate(record_value_list):
+            if record_value_list[index].isnumeric():
+                record_value_list[index] = float(record_value_list[index])
         data_set_list.append(record_value_list)
 
     return data_set_list
