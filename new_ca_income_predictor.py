@@ -106,17 +106,29 @@ def calculate_average(data_set_list):
     return attribute_sum_dict
 
 
+def create_test_values(data_set_one_dict, data_set_two_dict):
+
+    test_values_dict = {}
+
+    for key in data_set_one_dict.keys():
+        test_values_dict[key] = ((data_set_one_dict[key] + data_set_two_dict[key]) / 2)
+
+    return test_values_dict
+
+
+
 def main():
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
 
     over50_list, under50_list = create_training_sets(data_set_source_list)
-    over50_sub_list = count_discrete_values(over50_list)
-    under50_sub_list = count_discrete_values(under50_list)
+    over50_sub_dict = count_discrete_values(over50_list)
+    under50_sub_dict = count_discrete_values(under50_list)
 
-    print(calculate_average(over50_sub_list))
-    print(calculate_average(under50_sub_list))
+    over50_average_dict = calculate_average(over50_sub_dict)
+    under50_average_dict = calculate_average(under50_sub_dict)
+
+    print(create_test_values(over50_average_dict, under50_average_dict))
+
 
 if __name__ == "__main__":
     main()
-
-
