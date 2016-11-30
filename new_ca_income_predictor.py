@@ -27,14 +27,29 @@ def obtain_data_set(data_set_url):
     return data_set_list
 
 
-def count_discrete_values():
-    return {}
+def create_training_sets():
+    pass
+
+
+def count_discrete_values(data_set_list):
+    attr_value_count_dict = {1: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
+    record_total_int = len(data_set_list)
+
+    for record in data_set_list:
+        for key in attr_value_count_dict.keys():
+            if record[key] in attr_value_count_dict[key]:
+                attr_value_count_dict[key][record[key]] += 1
+            else:
+                attr_value_count_dict[key][record[key]] = 1
+
+    return attr_value_count_dict
 
 
 def main():
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
-    for record in data_set_source_list:
-        print(record)
+
+    print(count_discrete_values(data_set_source_list))
+
 
 if __name__ == "__main__":
     main()
