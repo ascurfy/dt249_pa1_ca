@@ -58,6 +58,7 @@ def create_training_sets(data_set_list):
 
 
 def count_discrete_values(data_set_list):
+
     attr_value_count_dict = {1: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
     record_total_int = len(data_set_list)
 
@@ -114,7 +115,6 @@ def create_test_values(data_set_one_dict, data_set_two_dict):
         test_values_dict[key] = ((data_set_one_dict[key] + data_set_two_dict[key]) / 2)
 
     return test_values_dict
-
 
 
 def main():
