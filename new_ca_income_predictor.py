@@ -191,7 +191,7 @@ def main():
 
     over50_average_dict = calculate_average(over50_training_list)
     under50_average_dict = calculate_average(under50_training_list)
-    
+
     testing_values_dict = create_test_values(over50_average_dict, under50_average_dict)
 
     a,b,c = income_predictor(testing_list, testing_values_dict)
