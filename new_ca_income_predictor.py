@@ -1,7 +1,7 @@
 import httplib2
 
 ADULT_DATA_SET_URL = "http://mf2.dit.ie/machine-learning-income.data"
-
+# TODO: over and under bool... reintroduce...
 # TODO: May not need this... fold into calculate_average()... maybe? Or not needed at all... words useless?
 KEYS_TUPLE = ('age',
               'work_class',
@@ -19,7 +19,7 @@ MEASURED_INDEXES = (0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12)
 
 
 def obtain_data_set(data_set_url):
-
+    # TODO: add comment
     http_get = httplib2.Http(".cache")
     header, content = http_get.request(data_set_url)
 
@@ -46,7 +46,7 @@ def obtain_data_set(data_set_url):
 
 
 def attribute_value_counter(record, attr_value_count_dict):
-
+    # TODO: add comment
     for key in attr_value_count_dict.keys():
         if record[key] in attr_value_count_dict[key]:
             attr_value_count_dict[key][record[key]] += 1
@@ -55,14 +55,14 @@ def attribute_value_counter(record, attr_value_count_dict):
 
 
 def divide_values(attr_value_count_dict, record_count):
-
+    # TODO: add comment
     for key in attr_value_count_dict.keys():
         for value in attr_value_count_dict[key]:
             attr_value_count_dict[key][value] /= record_count
 
 
 def substitute_discrete_values(data_set_list):
-
+    # TODO: add comment
     attr_over50_count_dict = {1: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
     attr_under50_count_dict = {1: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
     over50_count = 0
@@ -91,7 +91,7 @@ def substitute_discrete_values(data_set_list):
 
 
 def create_training_testing_data_sets(input_data_set_list, percentage_int=75):
-
+    # TODO: add comment
     requested_records_int = len(input_data_set_list) // 100 * percentage_int
 
     count = 0
@@ -114,7 +114,7 @@ def create_training_testing_data_sets(input_data_set_list, percentage_int=75):
 
 
 def calculate_average(data_set_list):
-
+    # TODO: add comment
     record_total_int = len(data_set_list)
     attribute_sum_dict = {KEYS_TUPLE[0]: 0.0,
                           KEYS_TUPLE[1]: 0.0,
@@ -141,7 +141,7 @@ def calculate_average(data_set_list):
 
 
 def create_test_values(data_set_one_dict, data_set_two_dict):
-
+    # TODO: add comment
     test_values_dict = {}
 
     for key in data_set_one_dict.keys():
@@ -151,7 +151,7 @@ def create_test_values(data_set_one_dict, data_set_two_dict):
 
 
 def income_predictor(test_data_set_list, test_values_dict):
-
+    # TODO: add comment
     correct_predictions_int = 0
     total_records_int = len(test_data_set_list)
     result_str = ''
@@ -196,6 +196,7 @@ def main():
 
     a,b,c = income_predictor(testing_list, testing_values_dict)
 
+    # TODO: nicer result output
     print(a,b,c)
 
 if __name__ == "__main__":
