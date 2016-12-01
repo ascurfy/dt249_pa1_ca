@@ -1,5 +1,3 @@
-import random
-
 import httplib2
 
 ADULT_DATA_SET_URL = "http://mf2.dit.ie/machine-learning-income.data"
@@ -89,47 +87,26 @@ def substitute_discrete_values(data_set_list):
 
     return data_set_list
 
-"""
-def split_by_income(input_data_set_list):
-
-    over_50_list = []
-    under_50_list = []
-
-    for record in input_data_set_list:
-        if record[-1] == '>50k':
-            over_50_list.append(record)
-        else:
-            under_50_list.append(record)
-
-    return over_50_list, under_50_list
-
 
 def create_training_testing_data_sets(input_data_set_list, percentage_int=75):
 
-    over_50_list, under_50_list = split_by_income(input_data_set_list)
-
-    combined_list = under_50_list[:]
-
-    for record in over_50_list:
-        combined_list.append(record)
-
-    randomised_list = random.shuffle(combined_list)
-
-    requested_records_int = len(randomised_list) // 100 * percentage_int
-
-    training_list = []
-    testing_list = []
+    requested_records_int = len(input_data_set_list) // 100 * percentage_int
 
     count = 0
 
-    for record in randomised_list:
+    over_50_training_list = []
+    under_50_training_list = []
+    testing_list = []
+
+    for record in input_data_set_list:
         if count >= requested_records_int:
             testing_list.append(record)
-        else:
-            training_list.append(record)
+        elif record[-1] == '<=50k':
+            under_50_training_list.append(record)
             count += 1
-
-    over_50_training_list, under_50_training_list = split_by_income(training_list)
+        else:
+            over_50_training_list.append(record)
+            count += 1
 
     return over_50_training_list, under_50_training_list, testing_list
 
@@ -185,7 +162,7 @@ def income_predictor(test_data_set_list, test_values_dict):
         index_count = 0
 
         for index in MEASURED_INDEXES:
-            if record[index] > test_values_dict[KEYS_TUPLE[index_count]][0]:
+            if record[index] > test_values_dict[KEYS_TUPLE[index_count]]:
                 over_50_score_int += 1
             else:
                 under_50_score_int += 1
@@ -203,18 +180,20 @@ def income_predictor(test_data_set_list, test_values_dict):
     correct_percentage = 100 * correct_predictions_int // total_records_int
 
     return correct_percentage, correct_predictions_int, total_records_int
-"""
 
 
 def main():
 
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
     sub_data_set_list = substitute_discrete_values(data_set_source_list)
+    over50_training_list, under50_training_list, testing_list = create_training_testing_data_sets(sub_data_set_list)
+    over50_average_dict = calculate_average(over50_training_list)
+    under50_average_dict = calculate_average(under50_training_list)
+    testing_values_dict = create_test_values(over50_average_dict, under50_average_dict)
 
-    for i in sub_data_set_list:
-        print(i)
+    a,b,c = income_predictor(testing_list, testing_values_dict)
 
-    print(a, b, c)
+    print(a,b,c)
 
 if __name__ == "__main__":
     main()
