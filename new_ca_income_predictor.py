@@ -1,6 +1,8 @@
 import httplib2
 
 ADULT_DATA_SET_URL = "http://mf2.dit.ie/machine-learning-income.data"
+
+# TODO: May not need this... fold into calculate_average()... maybe? Or not needed at all... words useless?
 KEYS_TUPLE = ('age',
               'work_class',
               'edu_number',
@@ -158,7 +160,6 @@ def income_predictor(test_data_set_list, test_values_dict):
 
         over_50_score_int = 0
         under_50_score_int = 0
-
         index_count = 0
 
         for index in MEASURED_INDEXES:
@@ -166,7 +167,6 @@ def income_predictor(test_data_set_list, test_values_dict):
                 over_50_score_int += 1
             else:
                 under_50_score_int += 1
-
             index_count += 1
 
         if over_50_score_int >= under_50_score_int:
@@ -186,9 +186,12 @@ def main():
 
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
     sub_data_set_list = substitute_discrete_values(data_set_source_list)
+
     over50_training_list, under50_training_list, testing_list = create_training_testing_data_sets(sub_data_set_list)
+
     over50_average_dict = calculate_average(over50_training_list)
     under50_average_dict = calculate_average(under50_training_list)
+    
     testing_values_dict = create_test_values(over50_average_dict, under50_average_dict)
 
     a,b,c = income_predictor(testing_list, testing_values_dict)
