@@ -82,7 +82,7 @@ def split_by_income(input_data_set_list):
     return over_50_list, under_50_list
 
 
-def create_training_testing_data_set(input_data_set_list, percentage_int=75):
+def create_training_testing_data_sets(input_data_set_list, percentage_int=75):
 
     over_50_list, under_50_list = split_by_income(input_data_set_list)
 
@@ -149,10 +149,53 @@ def create_test_values(data_set_one_dict, data_set_two_dict):
     return test_values_dict
 
 
+def income_predictor(test_data_set_list, test_values_dict):
+
+    correct_predictions_int = 0
+    total_records_int = len(test_data_set_list)
+    result_str = ''
+
+    for record in test_data_set_list:
+
+        over_50_score_int = 0
+        under_50_score_int = 0
+
+        index_count = 0
+
+        for index in MEASURED_INDEXES:
+            if record[index] > test_values_dict[KEYS_TUPLE[index_count]][0]:
+                over_50_score_int += 1
+            else:
+                under_50_score_int += 1
+
+            index_count += 1
+
+        if over_50_score_int >= under_50_score_int:
+            result_str = '>50k'
+        elif over_50_score_int < under_50_score_int:
+            result_str = '<=50k'
+
+        if result_str == record[-1]:
+            correct_predictions_int += 1
+
+    correct_percentage = 100 * correct_predictions_int // total_records_int
+
+    return correct_percentage, correct_predictions_int, total_records_int
+
+
 def main():
 
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
+    sub_data_set_list = substitute_discrete_values(data_set_source_list)
+    over_50_training_list, under_50_training_list, testing_list = create_training_testing_data_sets(sub_data_set_list)
 
+    over_50_averages_dict = calculate_average(over_50_training_list)
+    under_50_averages_dict = calculate_average(under_50_training_list)
+    testing_values = create_test_values(over_50_averages_dict, under_50_averages_dict)
+
+    a, b, c = income_predictor(testing_list, testing_values)
+
+    print(a, b, c)
 
 if __name__ == "__main__":
     main()
