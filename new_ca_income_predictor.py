@@ -57,7 +57,7 @@ def create_training_sets(data_set_list):
     return over_50_list, under_50_list
 
 
-def count_discrete_values(data_set_list):
+def substitute_discrete_values(data_set_list):
 
     attr_value_count_dict = {1: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
     record_total_int = len(data_set_list)
@@ -121,8 +121,8 @@ def main():
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
 
     over50_list, under50_list = create_training_sets(data_set_source_list)
-    over50_sub_dict = count_discrete_values(over50_list)
-    under50_sub_dict = count_discrete_values(under50_list)
+    over50_sub_dict = substitute_discrete_values(over50_list)
+    under50_sub_dict = substitute_discrete_values(under50_list)
 
     over50_average_dict = calculate_average(over50_sub_dict)
     under50_average_dict = calculate_average(under50_sub_dict)
