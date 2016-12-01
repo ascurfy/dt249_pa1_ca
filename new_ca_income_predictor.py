@@ -1,3 +1,5 @@
+import random
+
 import httplib2
 
 ADULT_DATA_SET_URL = "http://mf2.dit.ie/machine-learning-income.data"
@@ -43,20 +45,6 @@ def obtain_data_set(data_set_url):
     return data_set_list
 
 
-def create_training_sets(data_set_list):
-
-    over_50_list = []
-    under_50_list = []
-
-    for record in data_set_list:
-        if record[-1] == '>50k':
-            over_50_list.append(record)
-        else:
-            under_50_list.append(record)
-
-    return over_50_list, under_50_list
-
-
 def substitute_discrete_values(data_set_list):
 
     attr_value_count_dict = {1: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
@@ -78,6 +66,50 @@ def substitute_discrete_values(data_set_list):
             record[key] = attr_value_count_dict[key][record[key]]
 
     return data_set_list
+
+
+def split_by_income(input_data_set_list):
+
+    over_50_list = []
+    under_50_list = []
+
+    for record in input_data_set_list:
+        if record[-1] == '>50k':
+            over_50_list.append(record)
+        else:
+            under_50_list.append(record)
+
+    return over_50_list, under_50_list
+
+
+def create_training_testing_data_set(input_data_set_list, percentage_int=75):
+
+    over_50_list, under_50_list = split_by_income(input_data_set_list)
+
+    combined_list = under_50_list[:]
+
+    for record in over_50_list:
+        combined_list.append(record)
+
+    randomised_list = random.shuffle(combined_list)
+
+    requested_records_int = len(randomised_list) // 100 * percentage_int
+
+    training_list = []
+    testing_list = []
+
+    count = 0
+
+    for record in randomised_list:
+        if count >= requested_records_int:
+            testing_list.append(record)
+        else:
+            training_list.append(record)
+            count += 1
+
+    over_50_training_list, under_50_training_list = split_by_income(training_list)
+
+    return over_50_training_list, under_50_training_list, testing_list
 
 
 def calculate_average(data_set_list):
@@ -118,16 +150,8 @@ def create_test_values(data_set_one_dict, data_set_two_dict):
 
 
 def main():
+
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
-
-    over50_list, under50_list = create_training_sets(data_set_source_list)
-    over50_sub_dict = substitute_discrete_values(over50_list)
-    under50_sub_dict = substitute_discrete_values(under50_list)
-
-    over50_average_dict = calculate_average(over50_sub_dict)
-    under50_average_dict = calculate_average(under50_sub_dict)
-
-    print(create_test_values(over50_average_dict, under50_average_dict))
 
 
 if __name__ == "__main__":
