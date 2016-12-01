@@ -45,29 +45,51 @@ def obtain_data_set(data_set_url):
     return data_set_list
 
 
-def substitute_discrete_values(data_set_list):
+def attribute_value_counter(record, attr_value_count_dict):
 
-    attr_value_count_dict = {1: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
-    record_total_int = len(data_set_list)
+    for key in attr_value_count_dict.keys():
+        if record[key] in attr_value_count_dict[key]:
+            attr_value_count_dict[key][record[key]] += 1
+        else:
+            attr_value_count_dict[key][record[key]] = 1
 
-    for record in data_set_list:
-        for key in attr_value_count_dict.keys():
-            if record[key] in attr_value_count_dict[key]:
-                attr_value_count_dict[key][record[key]] += 1
-            else:
-                attr_value_count_dict[key][record[key]] = 1
+
+def divide_values(attr_value_count_dict, record_count):
 
     for key in attr_value_count_dict.keys():
         for value in attr_value_count_dict[key]:
-            attr_value_count_dict[key][value] /= record_total_int
+            attr_value_count_dict[key][value] /= record_count
+
+
+def substitute_discrete_values(data_set_list):
+
+    attr_over50_count_dict = {1: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
+    attr_under50_count_dict = {1: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
+    over50_count = 0
+    under50_count = 0
 
     for record in data_set_list:
-        for key in attr_value_count_dict.keys():
-            record[key] = attr_value_count_dict[key][record[key]]
+        if record[-1] == '<=50k':
+            attribute_value_counter(record, attr_under50_count_dict)
+            under50_count += 1
+        else:
+            attribute_value_counter(record, attr_over50_count_dict)
+            over50_count += 1
+
+    divide_values(attr_over50_count_dict, over50_count)
+    divide_values(attr_under50_count_dict, under50_count)
+
+    for record in data_set_list:
+        if record[-1] == '<=50k':
+            for key in attr_under50_count_dict.keys():
+                record[key] = attr_under50_count_dict[key][record[key]]
+        else:
+            for key in attr_over50_count_dict.keys():
+                record[key] = attr_over50_count_dict[key][record[key]]
 
     return data_set_list
 
-
+"""
 def split_by_income(input_data_set_list):
 
     over_50_list = []
@@ -181,19 +203,16 @@ def income_predictor(test_data_set_list, test_values_dict):
     correct_percentage = 100 * correct_predictions_int // total_records_int
 
     return correct_percentage, correct_predictions_int, total_records_int
+"""
 
 
 def main():
 
     data_set_source_list = obtain_data_set(ADULT_DATA_SET_URL)
     sub_data_set_list = substitute_discrete_values(data_set_source_list)
-    over_50_training_list, under_50_training_list, testing_list = create_training_testing_data_sets(sub_data_set_list)
 
-    over_50_averages_dict = calculate_average(over_50_training_list)
-    under_50_averages_dict = calculate_average(under_50_training_list)
-    testing_values = create_test_values(over_50_averages_dict, under_50_averages_dict)
-
-    a, b, c = income_predictor(testing_list, testing_values)
+    for i in sub_data_set_list:
+        print(i)
 
     print(a, b, c)
 
